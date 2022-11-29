@@ -1,0 +1,16 @@
+{
+  "name": "crypto-airdrop",
+  "version": "1.0.0",
+  "description": "Smart contract to airdrop tokens using merkle proof",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat test"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.12.2",
+    "hardhat-contract-sizer": "^2.6.1"
+  }
+}
