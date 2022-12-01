@@ -33,18 +33,18 @@ export function generateTree(recepients: Recepient[]) {
     );
 
     // Collect and log merkle root
-    const merkleRoot = merkleTree.getHexRoot();
-    console.log(`Generated Merkle root: ${merkleRoot}`);
+    // const merkleRoot = merkleTree.getHexRoot();
+    // console.log(`Generated Merkle root: ${merkleRoot}`);
 
     // Collect and save merkle tree + root
-    fs.writeFileSync(
-        // Output to merkle.json
-        outputPath,
-        // Root + full tree
-        JSON.stringify({
-            root: merkleRoot,
-            tree: merkleTree
-        })
-    );
-    return merkleRoot;
+    // fs.writeFileSync(
+    //     // Output to merkle.json
+    //     outputPath,
+    //     // Root + full tree
+    //     JSON.stringify({
+    //         root: merkleRoot,
+    //         tree: merkleTree
+    //     })
+    // );
+    return merkleTree;
 }
