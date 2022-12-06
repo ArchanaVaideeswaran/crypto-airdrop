@@ -8,11 +8,6 @@ dotenv();
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
-  paths: {
-    artifacts: "./build/artifacts",
-    cache: "./build/cache",
-  },
-  defaultNetwork: "localhost",
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545/",
@@ -23,6 +18,11 @@ const config: HardhatUserConfig = {
     goerli: {
       chainId: 5,
       url: `${process.env.ALCHEMY_GOERLI_API}`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },
+    mumbai: {
+      chainId: 80001,
+      url: `${process.env.ALCHEMY_MUMBAI_API}`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
   },

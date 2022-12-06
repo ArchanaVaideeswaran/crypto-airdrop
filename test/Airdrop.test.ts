@@ -37,7 +37,7 @@ describe("Merkle Airdrop Token", () => {
         for(let i = 5; i < 10; i++) {
             badRecepients.push({
                 address: users[i].address,
-                value: ethers.utils.parseUnits("10", 18).toString()
+                value: amount.toString()
             });
         }
         badTree = generateTree(badRecepients);

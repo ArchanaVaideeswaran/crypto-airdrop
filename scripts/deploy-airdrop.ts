@@ -1,22 +1,25 @@
 import { ethers } from "hardhat";
-import { Recepient, generateTree, generateLeaf } from "./merkle-tree-generator";
+import { Recepient, generateTree } from "./merkle-tree-generator";
+const { accounts } = require("../airdrop.json");
 import * as fs from "fs";
 
 
 async function main() {
     console.log("\n----------Deploying Merkle Airdrop Token----------\n");
 
-    const [ owner, ...accounts ] = await ethers.getSigners();
+    const [ owner ] = await ethers.getSigners();
     console.log("Deployer: ", owner.address);
     
     const decimals = 18;
     let recepients: Recepient[] = [];
-    for(let i = 0; i < 5; i++) {
+    for(let i = 0; i < accounts.length; i++) {
         const user = accounts[i];
+        // console.log("user: ", user);
         recepients.push({
             address: user.address, 
-            value: ethers.utils.parseUnits("10", decimals).toString()
+            value: ethers.utils.parseUnits(user.value, decimals).toString()
         });
+        // console.log("recepient: ", recepients[i]);
     }
     const merkleTree = generateTree(recepients);
     const merkleRoot = merkleTree.getHexRoot();
@@ -27,11 +30,12 @@ async function main() {
     const airdrop = await Airdrop.deploy(merkleRoot);
     await airdrop.deployed();
 
-    storeContract(
-        airdrop.address, 
-        Airdrop.interface.format("json"),
-        "MerkleAirdrop"
-    );
+    // storeContract(
+    //     airdrop.address, 
+    //     Airdrop.interface.format("json"),
+    //     "MerkleAirdrop",
+    //     "goerli"
+    // );
 
     console.log("\n----------Deployed Merkle Airdrop Token----------\n");
     console.log("Merkle Airdrop Token deployed at: ", airdrop.address);

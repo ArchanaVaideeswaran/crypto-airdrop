@@ -1,46 +1,47 @@
 import { ethers } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumberish } from "ethers";
-import { MerkleAirdrop } from "../typechain-types";
-import { Recepient, generateTree, generateLeaf } from "./merkle-tree-generator";
+import { generateLeaf, generateTree, Recepient } from "./merkle-tree-generator";
 import MerkleTree from "merkletreejs";
-const contract = require("../build/localhost/MerkleAirdrop.json");
+const contract = require("../build/goerli/MerkleAirdrop.json");
+const { accounts } = require("../airdrop.json");
 
-let owner: SignerWithAddress;
-let accounts: SignerWithAddress[];
-let airdrop: MerkleAirdrop;
-let amount: BigNumberish;
-let merkleTree: MerkleTree;
-let badTree: MerkleTree;
 
 async function main() {
-    [ owner, ...accounts ] = await ethers.getSigners();
-    console.log("Deployer: ", owner);
+    const [ owner ] = await ethers.getSigners();
+    console.log("Deployer: ", owner.address);
 
     const decimals = 18;
-    amount = ethers.utils.parseUnits("10", decimals);
-    merkleTree = getTree(0, 5);
-    badTree = getTree(5, 10);
-    
-    for(let i = 2; i < 7; i++) {
+    let recepients: Recepient[] = [];
+    for(let i = 0; i < accounts.length; i++) {
         const user = accounts[i];
-        let leaf = generateLeaf(
+        // console.log("user: ", user);
+        recepients.push({
+            address: user.address, 
+            value: ethers.utils.parseUnits(user.value, decimals).toString()
+        });
+        // console.log("recepient: ", recepients[i]);
+    }
+    const merkleTree = generateTree(recepients);
+    const merkleRoot = merkleTree.getHexRoot();
+
+    console.log("main(): Merkle root: ", merkleRoot);
+    
+    for(let i = 0; i < accounts.length; i++) {
+        const user = accounts[i];
+        const amount = ethers.utils.parseUnits(user.value, decimals);
+        const leaf = generateLeaf(
             user.address, 
             amount.toString(),
         );
-        let proof;
-        if(i < 5) {
-            proof = merkleTree.getHexProof(leaf);
-        }
-        else {
-            proof = badTree.getHexProof(leaf);
-        }
+        const proof  = merkleTree.getHexProof(leaf);
+
+        // console.log("user, leaf, proof: \n", user, leaf, proof);
         await claim(user.address, amount, proof);
     }
 }
 
 async function claim(to: string, amount: BigNumberish, proof: string[]) {
-    airdrop = await ethers.getContractAt("MerkleAirdrop", contract.address);
+    const airdrop = await ethers.getContractAt("MerkleAirdrop", contract.address);
     let tx;
     try {
         tx = await airdrop.claim(
@@ -56,19 +57,6 @@ async function claim(to: string, amount: BigNumberish, proof: string[]) {
     catch(err) {
         console.log(err);
     }
-}
-
-function getTree(start: number, end: number) {
-    let recepients: Recepient[] = [];
-
-    for(let i = start; i < end; i++) {
-        const user = accounts[i];
-        recepients.push({
-            address: user.address, 
-            value: amount.toString(),
-        });
-    }
-    return generateTree(recepients);
 }
 
 main();
