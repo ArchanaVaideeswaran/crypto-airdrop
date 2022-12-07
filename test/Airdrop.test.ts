@@ -3,7 +3,11 @@ import { expect } from "chai";
 import { BigNumberish } from "ethers";
 import { ethers } from "hardhat";
 import MerkleTree from "merkletreejs";
-import { generateLeaf, generateTree, Recepient } from "../scripts/merkle-tree-generator";
+import {
+    generateLeaf,
+    generateTree,
+    Recepient,
+} from "../scripts/merkle-tree-generator";
 import { MerkleAirdrop } from "../typechain-types";
 
 describe("Merkle Airdrop Token", () => {
@@ -16,14 +20,14 @@ describe("Merkle Airdrop Token", () => {
     let merkleRoot: string;
     let badRecepients: Recepient[];
     let badTree: MerkleTree;
-    
+
     before(async () => {
-        [ owner, ...users ] = await ethers.getSigners();
+        [owner, ...users] = await ethers.getSigners();
         console.log("Deployer: ", owner.address);
 
         recepients = [];
         amount = ethers.utils.parseUnits("10", 18);
-        for(let i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
             recepients.push({
                 address: users[i].address,
                 value: amount.toString(),
@@ -34,10 +38,10 @@ describe("Merkle Airdrop Token", () => {
         console.log("Merkle root: ", merkleRoot);
 
         badRecepients = [];
-        for(let i = 5; i < 10; i++) {
+        for (let i = 5; i < 10; i++) {
             badRecepients.push({
                 address: users[i].address,
-                value: amount.toString()
+                value: amount.toString(),
             });
         }
         badTree = generateTree(badRecepients);
@@ -62,7 +66,10 @@ describe("Merkle Airdrop Token", () => {
         });
 
         it("should revert if user is not in merkle tree", async () => {
-            leaf = generateLeaf(badRecepients[0].address, badRecepients[0].value);
+            leaf = generateLeaf(
+                badRecepients[0].address,
+                badRecepients[0].value
+            );
             proof = badTree.getHexProof(leaf);
 
             await expect(

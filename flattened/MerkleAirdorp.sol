@@ -57,7 +57,10 @@ library MerkleProof {
      *
      * _Available since v4.4._
      */
-    function processProof(bytes32[] memory proof, bytes32 leaf) internal pure returns (bytes32) {
+    function processProof(
+        bytes32[] memory proof,
+        bytes32 leaf
+    ) internal pure returns (bytes32) {
         bytes32 computedHash = leaf;
         for (uint256 i = 0; i < proof.length; i++) {
             computedHash = _hashPair(computedHash, proof[i]);
@@ -70,7 +73,10 @@ library MerkleProof {
      *
      * _Available since v4.7._
      */
-    function processProofCalldata(bytes32[] calldata proof, bytes32 leaf) internal pure returns (bytes32) {
+    function processProofCalldata(
+        bytes32[] calldata proof,
+        bytes32 leaf
+    ) internal pure returns (bytes32) {
         bytes32 computedHash = leaf;
         for (uint256 i = 0; i < proof.length; i++) {
             computedHash = _hashPair(computedHash, proof[i]);
@@ -136,7 +142,10 @@ library MerkleProof {
         uint256 totalHashes = proofFlags.length;
 
         // Check proof validity.
-        require(leavesLen + proof.length - 1 == totalHashes, "MerkleProof: invalid multiproof");
+        require(
+            leavesLen + proof.length - 1 == totalHashes,
+            "MerkleProof: invalid multiproof"
+        );
 
         // The xxxPos values are "pointers" to the next value to consume in each array. All accesses are done using
         // `xxx[xxxPos++]`, which return the current value and increment the pointer, thus mimicking a queue's "pop".
@@ -150,8 +159,12 @@ library MerkleProof {
         // - depending on the flag, either another value for the "main queue" (merging branches) or an element from the
         //   `proof` array.
         for (uint256 i = 0; i < totalHashes; i++) {
-            bytes32 a = leafPos < leavesLen ? leaves[leafPos++] : hashes[hashPos++];
-            bytes32 b = proofFlags[i] ? leafPos < leavesLen ? leaves[leafPos++] : hashes[hashPos++] : proof[proofPos++];
+            bytes32 a = leafPos < leavesLen
+                ? leaves[leafPos++]
+                : hashes[hashPos++];
+            bytes32 b = proofFlags[i]
+                ? leafPos < leavesLen ? leaves[leafPos++] : hashes[hashPos++]
+                : proof[proofPos++];
             hashes[i] = _hashPair(a, b);
         }
 
@@ -184,7 +197,10 @@ library MerkleProof {
         uint256 totalHashes = proofFlags.length;
 
         // Check proof validity.
-        require(leavesLen + proof.length - 1 == totalHashes, "MerkleProof: invalid multiproof");
+        require(
+            leavesLen + proof.length - 1 == totalHashes,
+            "MerkleProof: invalid multiproof"
+        );
 
         // The xxxPos values are "pointers" to the next value to consume in each array. All accesses are done using
         // `xxx[xxxPos++]`, which return the current value and increment the pointer, thus mimicking a queue's "pop".
@@ -198,8 +214,12 @@ library MerkleProof {
         // - depending on the flag, either another value for the "main queue" (merging branches) or an element from the
         //   `proof` array.
         for (uint256 i = 0; i < totalHashes; i++) {
-            bytes32 a = leafPos < leavesLen ? leaves[leafPos++] : hashes[hashPos++];
-            bytes32 b = proofFlags[i] ? leafPos < leavesLen ? leaves[leafPos++] : hashes[hashPos++] : proof[proofPos++];
+            bytes32 a = leafPos < leavesLen
+                ? leaves[leafPos++]
+                : hashes[hashPos++];
+            bytes32 b = proofFlags[i]
+                ? leafPos < leavesLen ? leaves[leafPos++] : hashes[hashPos++]
+                : proof[proofPos++];
             hashes[i] = _hashPair(a, b);
         }
 
@@ -216,7 +236,10 @@ library MerkleProof {
         return a < b ? _efficientHash(a, b) : _efficientHash(b, a);
     }
 
-    function _efficientHash(bytes32 a, bytes32 b) private pure returns (bytes32 value) {
+    function _efficientHash(
+        bytes32 a,
+        bytes32 b
+    ) private pure returns (bytes32 value) {
         /// @solidity memory-safe-assembly
         assembly {
             mstore(0x00, a)
@@ -226,9 +249,7 @@ library MerkleProof {
     }
 }
 
-
 // File @openzeppelin/contracts/token/ERC20/IERC20.sol@v4.8.0
-
 
 // OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
 
@@ -250,7 +271,11 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     /**
      * @dev Returns the amount of tokens in existence.
@@ -278,7 +303,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -312,9 +340,7 @@ interface IERC20 {
     ) external returns (bool);
 }
 
-
 // File @openzeppelin/contracts/utils/Context.sol@v4.8.0
-
 
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 
@@ -340,9 +366,7 @@ abstract contract Context {
     }
 }
 
-
 // File @openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol@v4.8.0
-
 
 // OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/IERC20Metadata.sol)
 
@@ -370,15 +394,11 @@ interface IERC20Metadata is IERC20 {
     function decimals() external view returns (uint8);
 }
 
-
 // File @openzeppelin/contracts/token/ERC20/ERC20.sol@v4.8.0
-
 
 // OpenZeppelin Contracts (last updated v4.8.0) (token/ERC20/ERC20.sol)
 
 pragma solidity ^0.8.0;
-
-
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -471,7 +491,9 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account) public view virtual override returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view virtual override returns (uint256) {
         return _balances[account];
     }
 
@@ -483,7 +505,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * - `to` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+    function transfer(
+        address to,
+        uint256 amount
+    ) public virtual override returns (bool) {
         address owner = _msgSender();
         _transfer(owner, to, amount);
         return true;
@@ -492,7 +517,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view virtual override returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -506,7 +534,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) public virtual override returns (bool) {
+    function approve(
+        address spender,
+        uint256 amount
+    ) public virtual override returns (bool) {
         address owner = _msgSender();
         _approve(owner, spender, amount);
         return true;
@@ -551,7 +582,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue
+    ) public virtual returns (bool) {
         address owner = _msgSender();
         _approve(owner, spender, allowance(owner, spender) + addedValue);
         return true;
@@ -571,10 +605,16 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue
+    ) public virtual returns (bool) {
         address owner = _msgSender();
         uint256 currentAllowance = allowance(owner, spender);
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+        require(
+            currentAllowance >= subtractedValue,
+            "ERC20: decreased allowance below zero"
+        );
         unchecked {
             _approve(owner, spender, currentAllowance - subtractedValue);
         }
@@ -607,7 +647,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         _beforeTokenTransfer(from, to, amount);
 
         uint256 fromBalance = _balances[from];
-        require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+        require(
+            fromBalance >= amount,
+            "ERC20: transfer amount exceeds balance"
+        );
         unchecked {
             _balances[from] = fromBalance - amount;
             // Overflow not possible: the sum of all balances is capped by totalSupply, and the sum is preserved by
@@ -713,7 +756,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
         if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= amount, "ERC20: insufficient allowance");
+            require(
+                currentAllowance >= amount,
+                "ERC20: insufficient allowance"
+            );
             unchecked {
                 _approve(owner, spender, currentAllowance - amount);
             }
@@ -761,13 +807,11 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {}
 }
 
-
 // File contracts/MerkleAirdrop.sol
 
-
 pragma solidity 0.8.17;
-contract MerkleAirdrop is ERC20 {
 
+contract MerkleAirdrop is ERC20 {
     bytes32 public immutable merkleRoot;
 
     mapping(address => bool) public hasClaimed;

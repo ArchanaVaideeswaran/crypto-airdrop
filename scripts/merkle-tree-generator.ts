@@ -1,12 +1,12 @@
 import { solidityKeccak256 } from "ethers/lib/utils";
 import keccak256 from "keccak256"; // Keccak256 hashing
 import MerkleTree from "merkletreejs"; // MerkleTree.js
-import path from "path"
+import path from "path";
 import * as fs from "fs";
 
 export type Recepient = {
-    address: string,
-    value: string
+    address: string;
+    value: string;
 };
 
 // Output file path
@@ -24,9 +24,7 @@ export function generateTree(recepients: Recepient[]) {
     // Generate merkle tree
     const merkleTree = new MerkleTree(
         // Generate leafs
-        recepients.map(({ address, value }) =>
-            generateLeaf(address, value)
-        ),
+        recepients.map(({ address, value }) => generateLeaf(address, value)),
         // Hashing function
         keccak256,
         { sortPairs: true }
@@ -43,7 +41,7 @@ export function generateTree(recepients: Recepient[]) {
         // Root + full tree
         JSON.stringify({
             root: merkleRoot,
-            tree: merkleTree
+            tree: merkleTree,
         })
     );
     return merkleTree;

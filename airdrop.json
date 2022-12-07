@@ -2,15 +2,15 @@
     "accounts": [
         {
             "address": "0x5B9e19a2d7a4Bc81B120D07EF844aB96E874f911",
-            "value" : "80"
+            "value": "80"
         },
         {
             "address": "0x03Dc0382895Dff762971FadcaB62236AaD79D518",
-            "value" : "60"
+            "value": "60"
         },
         {
             "address": "0x34EE5635641aa3D4B724E0a5EB51B69f0E26Ec8b",
-            "value" : "100"
+            "value": "100"
         }
     ]
 }

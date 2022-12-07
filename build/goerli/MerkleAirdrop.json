@@ -1,5 +1,5 @@
 {
-    "address": "0xa5267a8d2cF990702b597Aa14ab26f7312D4fb6c",
+    "address": "0xaF33CECbA540A93960c4379e0F834f526893708e",
     "abi": [
         {
             "type": "constructor",
@@ -41,7 +41,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [
                 { "type": "address", "name": "owner" },
                 { "type": "address", "name": "spender" }
@@ -53,7 +52,6 @@
             "name": "approve",
             "constant": false,
             "payable": false,
-            "gas": 29000000,
             "inputs": [
                 { "type": "address", "name": "spender" },
                 { "type": "uint256", "name": "amount" }
@@ -66,7 +64,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [{ "type": "address", "name": "account" }],
             "outputs": [{ "type": "uint256" }]
         },
@@ -75,7 +72,6 @@
             "name": "claim",
             "constant": false,
             "payable": false,
-            "gas": 29000000,
             "inputs": [
                 { "type": "address", "name": "to" },
                 { "type": "uint256", "name": "amount" },
@@ -89,7 +85,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [],
             "outputs": [{ "type": "uint8" }]
         },
@@ -98,7 +93,6 @@
             "name": "decreaseAllowance",
             "constant": false,
             "payable": false,
-            "gas": 29000000,
             "inputs": [
                 { "type": "address", "name": "spender" },
                 { "type": "uint256", "name": "subtractedValue" }
@@ -111,7 +105,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [{ "type": "address" }],
             "outputs": [{ "type": "bool" }]
         },
@@ -120,7 +113,6 @@
             "name": "increaseAllowance",
             "constant": false,
             "payable": false,
-            "gas": 29000000,
             "inputs": [
                 { "type": "address", "name": "spender" },
                 { "type": "uint256", "name": "addedValue" }
@@ -133,7 +125,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [],
             "outputs": [{ "type": "bytes32" }]
         },
@@ -143,7 +134,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [],
             "outputs": [{ "type": "string" }]
         },
@@ -153,7 +143,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [],
             "outputs": [{ "type": "string" }]
         },
@@ -163,7 +152,6 @@
             "constant": true,
             "stateMutability": "view",
             "payable": false,
-            "gas": 29000000,
             "inputs": [],
             "outputs": [{ "type": "uint256" }]
         },
@@ -172,7 +160,6 @@
             "name": "transfer",
             "constant": false,
             "payable": false,
-            "gas": 29000000,
             "inputs": [
                 { "type": "address", "name": "to" },
                 { "type": "uint256", "name": "amount" }
@@ -184,7 +171,6 @@
             "name": "transferFrom",
             "constant": false,
             "payable": false,
-            "gas": 29000000,
             "inputs": [
                 { "type": "address", "name": "from" },
                 { "type": "address", "name": "to" },
