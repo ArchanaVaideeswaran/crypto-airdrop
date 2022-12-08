@@ -6,7 +6,7 @@ MerkleAirdrop is an ERC20 token contract which lets users to claim the token if 
 
 You can generate your own merkel tree using [merkle-tree-generator](./scripts/merkle-tree-generator.ts) which uses [merkletreejs](https://www.npmjs.com/package/merkletreejs) library, by passing in a list of recepients (refer [airdrop.json](./airdrop.json)).
 
-MerkleAirdrop.sol deployed at: [0xa5267a8d2cF990702b597Aa14ab26f7312D4fb6c](https://goerli.etherscan.io/address/0xa5267a8d2cF990702b597Aa14ab26f7312D4fb6c#code)
+MerkleAirdrop.sol deployed at: [0xaF33CECbA540A93960c4379e0F834f526893708e](https://goerli.etherscan.io/address/0xaF33CECbA540A93960c4379e0F834f526893708e#code)
 
 ## Installation
 
