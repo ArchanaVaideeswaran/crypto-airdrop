@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { BigNumberish } from "ethers";
-import { generateLeaf, generateTree, Recepient } from "./merkle-tree-generator";
+import { generateLeaf, generateTree, Recipient } from "./merkle-tree-generator";
 const contract = require("../build/goerli/MerkleAirdrop.json");
 const { accounts } = require("../airdrop.json");
 
@@ -9,17 +9,17 @@ async function main() {
     console.log("Deployer: ", owner.address);
 
     const decimals = 18;
-    let recepients: Recepient[] = [];
+    let recipients: Recipient[] = [];
     for (let i = 0; i < accounts.length; i++) {
         const user = accounts[i];
         // console.log("user: ", user);
-        recepients.push({
+        recipients.push({
             address: user.address,
             value: ethers.utils.parseUnits(user.value, decimals).toString(),
         });
-        // console.log("recepient: ", recepients[i]);
+        // console.log("recepient: ", recipients[i]);
     }
-    const merkleTree = generateTree(recepients);
+    const merkleTree = generateTree(recipients);
     const merkleRoot = merkleTree.getHexRoot();
 
     console.log("main(): Merkle root: ", merkleRoot);

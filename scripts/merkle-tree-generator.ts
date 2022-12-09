@@ -4,7 +4,7 @@ import MerkleTree from "merkletreejs"; // MerkleTree.js
 import path from "path";
 import * as fs from "fs";
 
-export type Recepient = {
+export type Recipient = {
     address: string;
     value: string;
 };
@@ -20,11 +20,11 @@ export function generateLeaf(address: string, value: string) {
     );
 }
 
-export function generateTree(recepients: Recepient[]) {
+export function generateTree(recipients: Recipient[]) {
     // Generate merkle tree
     const merkleTree = new MerkleTree(
         // Generate leafs
-        recepients.map(({ address, value }) => generateLeaf(address, value)),
+        recipients.map(({ address, value }) => generateLeaf(address, value)),
         // Hashing function
         keccak256,
         { sortPairs: true }
