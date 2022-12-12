@@ -61,7 +61,7 @@ contract MerkleAirdrop {
         // Set addressmsg.sender claimed
         hasClaimed[msg.sender] = 1;
 
-        // Mint tokens to msg.sender address
+        // Transfer tokens to msg.sender address
         token.transferFrom(sender, msg.sender, amount);
 
         // Emit claim event
