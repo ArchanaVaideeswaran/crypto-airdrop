@@ -6,7 +6,7 @@ import MerkleTree from "merkletreejs";
 import {
     generateLeaf,
     generateTree,
-    Recepient,
+    Recipient,
 } from "../scripts/merkle-tree-generator";
 import { MerkleAirdrop } from "../typechain-types";
 
@@ -14,11 +14,11 @@ describe("Merkle Airdrop Token", () => {
     let owner: SignerWithAddress;
     let users: SignerWithAddress[];
     let airdrop: MerkleAirdrop;
-    let recepients: Recepient[];
+    let recepients: Recipient[];
     let amount: BigNumberish;
     let merkleTree: MerkleTree;
     let merkleRoot: string;
-    let badRecepients: Recepient[];
+    let badRecepients: Recipient[];
     let badTree: MerkleTree;
 
     before(async () => {

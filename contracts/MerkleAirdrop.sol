@@ -9,7 +9,7 @@ import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProo
 contract MerkleAirdrop is ERC20 {
     bytes32 public immutable merkleRoot;
 
-    mapping(address => bool) public hasClaimed;
+    mapping(address => bool) public hasClaimed; // use uint8
 
     event Claimed(address indexed to, uint amount);
 
@@ -27,6 +27,8 @@ contract MerkleAirdrop is ERC20 {
      * @param amount The amount of the claim being made.
      * @param proof A merkle proof proving the claim is valid.
      */
+    // to not required
+    // msg.sender
     function claim(address to, uint amount, bytes32[] calldata proof) external {
         require(!hasClaimed[to], "Already claimed");
 
@@ -44,4 +46,6 @@ contract MerkleAirdrop is ERC20 {
         // Emit claim event
         emit Claimed(to, amount);
     }
+
+    // setMerkleRoot
 }
