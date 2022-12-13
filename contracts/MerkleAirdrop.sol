@@ -2,12 +2,19 @@
 pragma solidity 0.8.17;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @dev A contract that allows recipients to claim tokens via 'merkle airdrop'.
  */
-contract MerkleAirdrop {
+contract MerkleAirdrop is ReentrancyGuard {
+    error AirdropInActive();
+    error NotInMerkleTree();
+    error AlreadyClaimed();
+    error NotOwner();
+
     address public owner;
     address public sender;
     IERC20 public token;
@@ -34,15 +41,11 @@ contract MerkleAirdrop {
         address _sender,
         address _token,
         bytes32 _merkleRoot
-    ) external onlyOwner {
+    ) external {
+        onlyOwner();
         setSender(_sender);
         setToken(_token);
         setMerkleRoot(_merkleRoot);
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "caller not owner");
-        _;
     }
 
     /**
@@ -50,43 +53,61 @@ contract MerkleAirdrop {
      * @param amount The amount of the claim being made.
      * @param proof A merkle proof proving the claim is valid.
      */
-    function claim(uint amount, bytes32[] calldata proof) external {
-        require(
-            sender != address(0) &&
-            address(token) != address(0) &&
-            merkleRoot != bytes32(0),
-            "Airdrop is not active"
-        );
-        require(hasClaimed[msg.sender] == 0, "Already claimed");
+    function claim(
+        uint amount,
+        bytes32[] calldata proof
+    ) external nonReentrant {
+        if (
+            sender == address(0) ||
+            address(token) == address(0) ||
+            merkleRoot == bytes32(0)
+        ) {
+            revert AirdropInActive();
+        }
+        if (hasClaimed[msg.sender] != 0) {
+            revert AlreadyClaimed();
+        }
 
         // Verify merkle proof, or revert if not in tree
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender, amount));
         bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
-        require(isValidLeaf, "Not in merkle tree");
+
+        if (!isValidLeaf) {
+            revert NotInMerkleTree();
+        }
 
         // Set address to claimed
         hasClaimed[msg.sender] = 1;
 
         // Transfer tokens to msg.sender address
-        token.transferFrom(sender, msg.sender, amount);
+        SafeERC20.safeTransferFrom(token, sender, msg.sender, amount);
 
         // Emit claim event
         emit Claimed(msg.sender, amount);
     }
 
-    function setMerkleRoot(bytes32 _merkleRoot) public onlyOwner {
+    function setMerkleRoot(bytes32 _merkleRoot) public {
+        onlyOwner();
         require(_merkleRoot != bytes32(0), "merkle root cannot be zero");
         merkleRoot = _merkleRoot;
     }
 
-    function setToken(address _token) public onlyOwner {
+    function setToken(address _token) public {
+        onlyOwner();
         require(_token != address(0), "token cannot be zero address");
         require(_token.code.length > 0, "token should be a contract");
         token = IERC20(_token);
     }
 
-    function setSender(address _sender) public onlyOwner {
+    function setSender(address _sender) public {
+        onlyOwner();
         require(_sender != address(0), "sender cannot be zero address");
         sender = _sender;
+    }
+
+    function onlyOwner() internal view {
+        if (msg.sender != owner) {
+            revert NotOwner();
+        }
     }
 }
