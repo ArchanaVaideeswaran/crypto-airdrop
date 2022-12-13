@@ -51,14 +51,20 @@ contract MerkleAirdrop {
      * @param proof A merkle proof proving the claim is valid.
      */
     function claim(uint amount, bytes32[] calldata proof) external {
-        require(hasClaimed[msg.sender] != 0, "Already claimed");
+        require(
+            sender != address(0) &&
+            address(token) != address(0) &&
+            merkleRoot != bytes32(0),
+            "Airdrop is not active"
+        );
+        require(hasClaimed[msg.sender] == 0, "Already claimed");
 
         // Verify merkle proof, or revert if not in tree
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender, amount));
         bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
         require(isValidLeaf, "Not in merkle tree");
 
-        // Set addressmsg.sender claimed
+        // Set address to claimed
         hasClaimed[msg.sender] = 1;
 
         // Transfer tokens to msg.sender address
