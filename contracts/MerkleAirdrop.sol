@@ -20,10 +20,10 @@ contract MerkleAirdrop is ReentrancyGuard {
     error ZeroAddress();
     error NotContract();
 
-    address private owner;
-    address private sender;
-    IERC20 private token;
-    bytes32 private merkleRoot;
+    address private _owner;
+    address private _sender;
+    IERC20 private _token;
+    bytes32 private _merkleRoot;
 
     mapping(address => uint8) private _claimed;
 
@@ -33,24 +33,23 @@ contract MerkleAirdrop is ReentrancyGuard {
      * @dev Constructor
      */
     constructor() {
-        owner = msg.sender;
+        _owner = msg.sender;
     }
 
     /**
      * @dev initialzer
-     * @param _sender The account from which the tokens are airdropped.
-     * @param _token The address of the airdrop token.
-     * @param _merkleRoot The root of the merkle tree contraining the selected recipients
+     * @param sender The account from which the tokens are airdropped.
+     * @param token The address of the airdrop token.
+     * @param merkleRoot The root of the merkle tree contraining the selected recipients
      */
     function initialize(
-        address _sender,
-        address _token,
-        bytes32 _merkleRoot
+        address sender,
+        address token,
+        bytes32 merkleRoot
     ) external {
-        onlyOwner();
-        setSender(_sender);
-        setToken(_token);
-        setMerkleRoot(_merkleRoot);
+        setSender(sender);
+        setToken(token);
+        setMerkleRoot(merkleRoot);
     }
 
     /**
@@ -63,68 +62,66 @@ contract MerkleAirdrop is ReentrancyGuard {
         bytes32[] calldata proof
     ) external nonReentrant {
         if (
-            sender == address(0) ||
-            address(token) == address(0) ||
-            merkleRoot == bytes32(0)
+            _sender == address(0) ||
+            address(_token) == address(0) ||
+            _merkleRoot == bytes32(0)
         ) revert AirdropInActive();
 
         if (_claimed[msg.sender] != 0) revert AlreadyClaimed();
 
         // Verify merkle proof, or revert if not in tree
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender, amount));
-        bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
+        bool isValidLeaf = MerkleProof.verify(proof, _merkleRoot, leaf);
 
-        if (!isValidLeaf) {
-            revert NotInMerkleTree();
-        }
+        if (!isValidLeaf) revert NotInMerkleTree();
 
         // Set address to claimed
         _claimed[msg.sender] = 1;
 
         // Transfer tokens to msg.sender address
-        token.safeTransferFrom(sender, msg.sender, amount);
+        _token.safeTransferFrom(_sender, msg.sender, amount);
 
         // Emit claim event
         emit Claimed(msg.sender, amount);
     }
 
-    function setMerkleRoot(bytes32 _merkleRoot) public {
+    function setMerkleRoot(bytes32 merkleRoot) public {
         onlyOwner();
         if (_merkleRoot == bytes32(0)) revert ZeroMerkleRoot();
-        merkleRoot = _merkleRoot;
+        _merkleRoot = merkleRoot;
     }
 
-    function setToken(address _token) public {
+    function setToken(address token) public {
         onlyOwner();
-        if (_token == address(0)) revert ZeroAddress();
-        if (_token.code.length <= 0) revert NotContract();
-        token = IERC20(_token);
+        if (token == address(0)) revert ZeroAddress();
+        if (token.code.length <= 0) revert NotContract();
+        _token = IERC20(token);
     }
 
-    function setSender(address _sender) public {
+    function setSender(address sender) public {
         onlyOwner();
-        if (_sender == address(0)) revert ZeroAddress();
-        sender = _sender;
+        if (sender == address(0)) revert ZeroAddress();
+        _sender = sender;
     }
 
-    function hasClaimed(address claimant) public view returns (bool) {
+    function hasClaimed(address claimant) external view returns (bool) {
         if (_claimed[claimant] == 0) return false;
         return true;
     }
 
-    function getToken() public view returns (address) {
-        return address(token);
+    function getToken() external view returns (address) {
+        return address(_token);
     }
 
-    function getSender() public view returns (address) {
-        return sender;
+    function getSender() external view returns (address) {
+        return _sender;
     }
 
-    function getMerkleRoot() public view returns (bytes32) {
-        return merkleRoot;   
+    function getMerkleRoot() external view returns (bytes32) {
+        return _merkleRoot;
     }
 
     function onlyOwner() internal view {
-        if (msg.sender != owner) revert NotOwner();
+        if (msg.sender != _owner) revert NotOwner();
     }
 }
