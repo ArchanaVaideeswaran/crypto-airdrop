@@ -10,17 +10,22 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.
  * @dev A contract that allows recipients to claim tokens via 'merkle airdrop'.
  */
 contract MerkleAirdrop is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
     error AirdropInActive();
     error NotInMerkleTree();
     error AlreadyClaimed();
     error NotOwner();
+    error ZeroMerkleRoot();
+    error ZeroAddress();
+    error NotContract();
 
-    address public owner;
-    address public sender;
-    IERC20 public token;
-    bytes32 public merkleRoot;
+    address private owner;
+    address private sender;
+    IERC20 private token;
+    bytes32 private merkleRoot;
 
-    mapping(address => uint8) public hasClaimed;
+    mapping(address => uint8) private _claimed;
 
     event Claimed(address indexed claimant, uint amount);
 
@@ -61,12 +66,9 @@ contract MerkleAirdrop is ReentrancyGuard {
             sender == address(0) ||
             address(token) == address(0) ||
             merkleRoot == bytes32(0)
-        ) {
-            revert AirdropInActive();
-        }
-        if (hasClaimed[msg.sender] != 0) {
-            revert AlreadyClaimed();
-        }
+        ) revert AirdropInActive();
+
+        if (_claimed[msg.sender] != 0) revert AlreadyClaimed();
 
         // Verify merkle proof, or revert if not in tree
         bytes32 leaf = keccak256(abi.encodePacked(msg.sender, amount));
@@ -77,10 +79,10 @@ contract MerkleAirdrop is ReentrancyGuard {
         }
 
         // Set address to claimed
-        hasClaimed[msg.sender] = 1;
+        _claimed[msg.sender] = 1;
 
         // Transfer tokens to msg.sender address
-        SafeERC20.safeTransferFrom(token, sender, msg.sender, amount);
+        token.safeTransferFrom(sender, msg.sender, amount);
 
         // Emit claim event
         emit Claimed(msg.sender, amount);
@@ -88,26 +90,41 @@ contract MerkleAirdrop is ReentrancyGuard {
 
     function setMerkleRoot(bytes32 _merkleRoot) public {
         onlyOwner();
-        require(_merkleRoot != bytes32(0), "merkle root cannot be zero");
+        if (_merkleRoot == bytes32(0)) revert ZeroMerkleRoot();
         merkleRoot = _merkleRoot;
     }
 
     function setToken(address _token) public {
         onlyOwner();
-        require(_token != address(0), "token cannot be zero address");
-        require(_token.code.length > 0, "token should be a contract");
+        if (_token == address(0)) revert ZeroAddress();
+        if (_token.code.length <= 0) revert NotContract();
         token = IERC20(_token);
     }
 
     function setSender(address _sender) public {
         onlyOwner();
-        require(_sender != address(0), "sender cannot be zero address");
+        if (_sender == address(0)) revert ZeroAddress();
         sender = _sender;
     }
 
+    function hasClaimed(address claimant) public view returns (bool) {
+        if (_claimed[claimant] == 0) return false;
+        return true;
+    }
+
+    function getToken() public view returns (address) {
+        return address(token);
+    }
+
+    function getSender() public view returns (address) {
+        return sender;
+    }
+
+    function getMerkleRoot() public view returns (bytes32) {
+        return merkleRoot;   
+    }
+
     function onlyOwner() internal view {
-        if (msg.sender != owner) {
-            revert NotOwner();
-        }
+        if (msg.sender != owner) revert NotOwner();
     }
 }
