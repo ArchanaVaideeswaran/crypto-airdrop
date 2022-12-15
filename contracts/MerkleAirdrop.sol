@@ -28,6 +28,9 @@ contract MerkleAirdrop is ReentrancyGuard {
     mapping(address => uint8) private _claimed;
 
     event Claimed(address indexed claimant, uint amount);
+    event MerkleRootChanged(bytes32 newMerkleRoot);
+    event TokenChanged(address newToken);
+    event SenderChanged(address newSender);
 
     /**
      * @dev Constructor
@@ -47,6 +50,7 @@ contract MerkleAirdrop is ReentrancyGuard {
         address token,
         bytes32 merkleRoot
     ) external {
+        onlyOwner();
         setSender(sender);
         setToken(token);
         setMerkleRoot(merkleRoot);
@@ -85,25 +89,6 @@ contract MerkleAirdrop is ReentrancyGuard {
         emit Claimed(msg.sender, amount);
     }
 
-    function setMerkleRoot(bytes32 merkleRoot) public {
-        onlyOwner();
-        if (_merkleRoot == bytes32(0)) revert ZeroMerkleRoot();
-        _merkleRoot = merkleRoot;
-    }
-
-    function setToken(address token) public {
-        onlyOwner();
-        if (token == address(0)) revert ZeroAddress();
-        if (token.code.length <= 0) revert NotContract();
-        _token = IERC20(token);
-    }
-
-    function setSender(address sender) public {
-        onlyOwner();
-        if (sender == address(0)) revert ZeroAddress();
-        _sender = sender;
-    }
-
     function hasClaimed(address claimant) external view returns (bool) {
         if (_claimed[claimant] == 0) return false;
         return true;
@@ -119,6 +104,28 @@ contract MerkleAirdrop is ReentrancyGuard {
 
     function getMerkleRoot() external view returns (bytes32) {
         return _merkleRoot;
+    }
+
+    function setMerkleRoot(bytes32 merkleRoot) internal {
+        if (merkleRoot == bytes32(0)) revert ZeroMerkleRoot();
+        if (merkleRoot == _merkleRoot) return;
+        _merkleRoot = merkleRoot;
+        emit MerkleRootChanged(merkleRoot);
+    }
+
+    function setToken(address token) internal {
+        if (token == address(0)) revert ZeroAddress();
+        if (token.code.length <= 0) revert NotContract();
+        if (token == address(_token)) return;
+        _token = IERC20(token);
+        emit TokenChanged(token);
+    }
+
+    function setSender(address sender) internal {
+        if (sender == address(0)) revert ZeroAddress();
+        if (sender == _sender) return;
+        _sender = sender;
+        emit SenderChanged(sender);
     }
 
     function onlyOwner() internal view {
