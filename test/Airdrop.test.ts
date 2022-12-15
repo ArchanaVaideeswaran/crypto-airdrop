@@ -172,6 +172,22 @@ describe("Merkle Airdrop Token", () => {
                 .not.to.emit(airdrop, "SenderChanged")
                 .not.to.emit(airdrop, "MerkleRootChanged");
         });
+
+        it("should not emit any changed events",async () => {
+            await expect(
+                airdrop.initialize(sender.address, token.address, merkleRoot)
+            )
+                .to.emit(airdrop, "SenderChanged")
+                .to.emit(airdrop, "TokenChanged")
+                .to.emit(airdrop, "MerkleRootChanged");
+            
+            await expect(
+                airdrop.initialize(sender.address, token.address, merkleRoot)
+            )
+                .not.to.emit(airdrop, "SenderChanged")
+                .not.to.emit(airdrop, "TokenChanged")
+                .not.to.emit(airdrop, "MerkleRootChanged");
+        })
     });
 
     describe("Function claim", () => {
