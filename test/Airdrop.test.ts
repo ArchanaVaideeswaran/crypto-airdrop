@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { BigNumberish, Bytes, BytesLike } from "ethers";
+import { BigNumberish } from "ethers";
 import { ethers } from "hardhat";
 import MerkleTree from "merkletreejs";
 import {
@@ -28,7 +28,8 @@ describe("Merkle Airdrop Token", () => {
         console.log("Deployer: ", owner.address);
 
         recepients = [];
-        amount = ethers.utils.parseUnits("10", 18);
+        let decimals = 18;
+        amount = ethers.utils.parseUnits("10", decimals);
         for (let i = 0; i < 5; i++) {
             recepients.push({
                 address: users[i].address,
@@ -73,8 +74,7 @@ describe("Merkle Airdrop Token", () => {
         });
 
         it("should revert if initialized with zero merkle root", async () => {
-            let zeroMerkleRoot =
-                "0x0000000000000000000000000000000000000000000000000000000000000000";
+            let zeroMerkleRoot = ethers.constants.HashZero;
             await expect(
                 airdrop.initialize(
                     sender.address,
@@ -156,11 +156,11 @@ describe("Merkle Airdrop Token", () => {
                 .to.emit(airdrop, "SenderChanged")
                 .not.to.emit(airdrop, "TokenChanged")
                 .not.to.emit(airdrop, "MerkleRootChanged");
-            
+
             const NewToken = await ethers.getContractFactory("TokenDAI");
             const newToken = await NewToken.deploy();
             newToken.deployed();
-            
+
             await expect(
                 airdrop.initialize(
                     users[0].address,
@@ -173,21 +173,21 @@ describe("Merkle Airdrop Token", () => {
                 .not.to.emit(airdrop, "MerkleRootChanged");
         });
 
-        it("should not emit any changed events",async () => {
+        it("should not emit any changed events", async () => {
             await expect(
                 airdrop.initialize(sender.address, token.address, merkleRoot)
             )
                 .to.emit(airdrop, "SenderChanged")
                 .to.emit(airdrop, "TokenChanged")
                 .to.emit(airdrop, "MerkleRootChanged");
-            
+
             await expect(
                 airdrop.initialize(sender.address, token.address, merkleRoot)
             )
                 .not.to.emit(airdrop, "SenderChanged")
                 .not.to.emit(airdrop, "TokenChanged")
                 .not.to.emit(airdrop, "MerkleRootChanged");
-        })
+        });
     });
 
     describe("Function claim", () => {
@@ -216,6 +216,10 @@ describe("Merkle Airdrop Token", () => {
                 airdrop.connect(users[5]).claim(amount, proof)
             ).to.be.revertedWithCustomError(airdrop, "NotInMerkleTree");
         });
+
+        it("should return false if not claimed",async () => {
+            expect(await airdrop.hasClaimed(users[0].address)).to.equal(false);
+        })
 
         it("should revert if user already claimed", async () => {
             let balance = await token.balanceOf(sender.address);

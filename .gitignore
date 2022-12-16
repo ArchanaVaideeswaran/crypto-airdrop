@@ -11,3 +11,5 @@ artifacts
 
 #Merkle Tree
 merkle.json
+proofs-localhost.json
+proofs-goerli.json
