@@ -40,29 +40,36 @@ async function main() {
     const merkleTree = generateTree(recipients);
     const merkleRoot = merkleTree.getHexRoot();
 
-    // const Airdrop = require(`../build/${network}/MerkleAirdrop.json`);
-    // const airdrop = await ethers.getContractAt(
-    //     "MerkleAirdrop",
-    //     Airdrop.address
-    // );
+    const Airdrop = require(`../build/${network}/MerkleAirdrop.json`);
+    const airdrop = await ethers.getContractAt(
+        "MerkleAirdrop",
+        Airdrop.address
+    );
 
-    // const balance = await token.balanceOf(sender.address);
-    // let tx: any = await token.approve(airdrop.address, balance);
-    // await tx.wait();
+    try {
+        const balance = await token.balanceOf(sender.address);
+        let tx: any;
+        tx = await token.approve(airdrop.address, balance).catch((err: any) => {
+            throw err;
+        });
+        await tx.wait();
 
-    // tx = await airdrop
-    //     .initialize(sender.address, token.address, merkleRoot)
-    //     .catch((err) => {
-    //         console.log(err);
-    //     });
-    // await tx.wait();
+        tx = await airdrop
+            .initialize(sender.address, token.address, merkleRoot)
+            .catch((err: any) => {
+                throw err;
+            });
+        await tx.wait();
 
-    console.log("\n----------MerkleAirdrop Initialized----------\n");
-    console.log({
-        sender: sender.address,
-        token: token.address,
-        merkleRoot: merkleRoot,
-    });
+        console.log("\n----------MerkleAirdrop Initialized----------\n");
+        console.log({
+            sender: sender.address,
+            token: token.address,
+            merkleRoot: merkleRoot,
+        });
+    } catch (error) {
+        console.log(error);
+    }
 
     // store proofs in proofs.json
     let proofs: any[] = [];
@@ -74,7 +81,10 @@ async function main() {
         };
         proofs.push(proof);
     }
-    const outputPath: string = path.join(__dirname, `../proofs-${network}.json`);
+    const outputPath: string = path.join(
+        __dirname,
+        `../proofs-${network}.json`
+    );
     try {
         fs.writeFileSync(
             outputPath,
