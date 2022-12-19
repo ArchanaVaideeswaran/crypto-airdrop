@@ -6,6 +6,10 @@ MerkleAirdrop is contract that allows recepients to claim tokens via merkle aird
 
 Generate merkle tree using [merkle-tree-generator](./scripts/merkle-tree-generator.ts), by passing in a list of recepients (refer [airdrop.json](./airdrop.json)).
 
+### Contract structure
+
+![MerkleAirdrop.sol Mindmap](./mindmap.jpg "MerkleAirdrop Mindmap")
+
 ## Testing on Goerli testnet
 
 MerkleAirdrop.sol deployed at: [0x764b971348f0571E8BCF2Ea2AdBB7E793d93B145](https://goerli.etherscan.io/address/0x764b971348f0571E8BCF2Ea2AdBB7E793d93B145#code)
