@@ -2,7 +2,7 @@
 
 ## About
 
-MerkleAirdrop is contract that allows recepients to claim tokens via merkle airdrop if they prove that they are a part of the merkle tree.
+MerkleAirdrop is a contract that allows recepients to claim tokens via merkle airdrop if they prove that they are a part of the merkle tree.
 
 Generate merkle tree using [merkle-tree-generator](./scripts/merkle-tree-generator.ts), by passing in a list of recepients (refer [airdrop.json](./airdrop.json)).
 

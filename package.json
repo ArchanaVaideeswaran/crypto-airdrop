@@ -2,12 +2,20 @@
   "name": "crypto-airdrop",
   "version": "1.0.0",
   "description": "Smart contract to airdrop tokens using merkle proof",
-  "main": "index.js",
   "scripts": {
-    "test": "npx hardhat test"
+    "clean-compile": "hardhat clean && hardhat compile",
+    "test": "hardhat test",
+    "size": "hardhat size-contracts"
   },
-  "author": "",
+  "author": {
+    "name": "Archana Vaideeswaran",
+    "email": "archanav1929@gmail.com"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArchanaVaideeswaran/crypto-airdrop"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "hardhat": "^2.12.3",
