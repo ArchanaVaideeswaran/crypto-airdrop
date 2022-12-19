@@ -10,7 +10,11 @@
         },
         {
             "address": "0x34EE5635641aa3D4B724E0a5EB51B69f0E26Ec8b",
-            "value": "100"
+            "value": "90"
+        },
+        {
+            "address": "0x1eba0B8BBC49921f28b79984B9D9921BfDBccA0c",
+            "value": "70"
         }
     ]
 }

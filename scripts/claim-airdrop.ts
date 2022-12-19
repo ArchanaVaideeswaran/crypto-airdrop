@@ -1,57 +1,89 @@
 import { ethers } from "hardhat";
-import { BigNumberish } from "ethers";
-import { generateLeaf, generateTree, Recipient } from "./merkle-tree-generator";
-const contract = require("../build/goerli/MerkleAirdrop.json");
 const { accounts } = require("../airdrop.json");
 
+let proofs: any;
+
 async function main() {
-    const [owner] = await ethers.getSigners();
-    console.log("Deployer: ", owner.address);
+    const [user0, ...users] = await ethers.getSigners();
 
-    const decimals = 18;
-    let recipients: Recipient[] = [];
-    for (let i = 0; i < accounts.length; i++) {
-        const user = accounts[i];
-        // console.log("user: ", user);
-        recipients.push({
-            address: user.address,
-            value: ethers.utils.parseUnits(user.value, decimals).toString(),
-        });
-        // console.log("recepient: ", recipients[i]);
-    }
-    const merkleTree = generateTree(recipients);
-    const merkleRoot = merkleTree.getHexRoot();
+    let network = (await ethers.provider.getNetwork()).name;
+    network = network == "unknown" ? "localhost" : network;
 
-    console.log("main(): Merkle root: ", merkleRoot);
+    proofs = require(`../proofs-${network}.json`);
 
-    for (let i = 0; i < accounts.length; i++) {
-        const user = accounts[i];
-        const amount = ethers.utils.parseUnits(user.value, decimals);
-        const leaf = generateLeaf(user.address, amount.toString());
-        const proof = merkleTree.getHexProof(leaf);
+    const TokenXP = require(`../build/${network}/TokenXP.json`);
+    const token = await ethers.getContractAt("TokenXP", TokenXP.address);
 
-        // console.log("user, leaf, proof: \n", user, leaf, proof);
-        await claim(user.address, amount, proof);
+    const decimals = await token.decimals();
+    let amount: any = ethers.utils.parseUnits("10", decimals);
+
+    const Airdrop = require(`../build/${network}/MerkleAirdrop.json`);
+    const airdrop = await ethers.getContractAt(
+        "MerkleAirdrop",
+        Airdrop.address
+    );
+
+    let tx;
+    let proof;
+    if (network == "goerli") {
+        proof = getProof(user0.address);
+        amount = getValue(user0.address);
+        amount = ethers.utils.parseUnits(amount, decimals);
+        console.log({ address: user0.address, proof });
+        if (proof.length != 0) {
+            try {
+                tx = await airdrop
+                    .connect(user0)
+                    .claim(amount, proof)
+                    .catch((err: any) => {
+                        throw err;
+                    });
+
+                tx = await tx.wait();
+                console.log(user0.address, " claimed token successfully");
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    } else if (network == "localhost") {
+        for (let i = 0; i < 5; i++) {
+            let tx;
+            let user = users[i];
+            proof = getProof(user.address);
+            if (proof.length != 0) {
+                try {
+                    tx = await airdrop
+                        .connect(user)
+                        .claim(amount, proof)
+                        .catch((err: any) => {
+                            throw err;
+                        });
+
+                    tx = await tx.wait();
+                    console.log(user.address, " claimed token successfully");
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
     }
 }
 
-async function claim(to: string, amount: BigNumberish, proof: string[]) {
-    const airdrop = await ethers.getContractAt(
-        "MerkleAirdrop",
-        contract.address
-    );
-    let tx;
-    try {
-        tx = await airdrop.claim(to, amount, proof).catch((err: any) => {
-            throw err;
-        });
-
-        tx = await tx.wait();
-        console.log("token claimed successfully");
-        console.log("tx: ", tx);
-    } catch (err) {
-        console.log(err);
+function getProof(address: string) {
+    proofs = proofs.proofs;
+    for (let i = 0; i < proofs.length; i++) {
+        let res = proofs[i];
+        if (res.address == address) return res.proof;
     }
+    return [];
+}
+
+function getValue(address: string) {
+    for (let i = 0; i < accounts.length; i++) {
+        let res = accounts[i];
+        if (res.address == address) return res.value;
+    }
+    return;
 }
 
 main();

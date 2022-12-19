@@ -10,7 +10,6 @@
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
-    "ganache-cli": "^6.12.2",
     "hardhat": "^2.12.3",
     "hardhat-contract-sizer": "^2.6.1"
   },
